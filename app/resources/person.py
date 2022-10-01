@@ -6,4 +6,9 @@ from app import shared
 class CreatePerson(Resource):
     def post(self):
         data = request.get_json()
-        shared.people.append(PersonModel(**data))
+        p = PersonModel(**data)
+        p.save()
+        
+# class KeepAlive(Resource):
+#     def post(self):
+        
