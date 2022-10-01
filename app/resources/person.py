@@ -15,7 +15,7 @@ class CreatePerson(Resource):
 class KeepAlive(Resource):
     def post(self, id):
         d = PersonModel.objects(pk=id).first()
-        d.timeout=datetime.now()+ datetime.timedelta(minutes=1)
+        d.timeout=datetime.now()+ timedelta(minutes=1)
         d.save()
 
     
