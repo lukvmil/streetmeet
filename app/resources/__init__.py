@@ -1,0 +1,1 @@
+from app.resources.person import *
