@@ -1,12 +1,12 @@
 from flask_restful import Resource
-from app.models.person import PersonModel
+from app.models import UserModel
 
 class FindMatch(Resource):
 	def get(self, id):
-		d = PersonModel.objects(pk=id).first()
-		print(d.location)
-		matches = PersonModel.objects(location__within_spherical_distance=[d.location, 5/3963.2])
+		d = UserModel.objects(pk=id).first()
+		matches = UserModel.objects(location__within_spherical_distance=[d.location, 5/3963.2])
 		return [{
-			'first_name': m['first_name'],
+			'id': m['id'],
+			'username': m['username'],
 			'topic': m['topic']
 		} for m in matches]

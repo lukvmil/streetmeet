@@ -1,2 +1,2 @@
-from app.resources.person import *
+from app.resources.user import *
 from app.resources.match import *
