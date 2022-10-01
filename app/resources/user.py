@@ -12,7 +12,7 @@ class CreateUser(Resource):
         p.timeout = datetime.now() + timedelta(minutes=1)
         p.save()
 
-        return {'id': p.id}
+        return {'id': p.id, 'expiration': str(d.timeout)}
         
 class KeepAlive(Resource):
     def post(self, id):
