@@ -1,18 +1,46 @@
+<!-- eslint-disable vue/require-v-for-key -->
 <template>
-  <div>
-    <div v-if="chatData">
-      <h2>Messages</h2>
-      <div v-for="message in chatData.messages">
-        <div>
-          <strong>{{ message.self ? "You: " : "" }}</strong> {{ message.text }}
-        </div>
+  <div class="section">
+    <div v-if="chatData && otherPerson">
+      <h2>{{ otherPerson.username }}</h2>
+
+      <div class="messages">
+        <TransitionGroup name="list">
+          <div
+            v-for="message in chatData.messages"
+            class="message"
+            :key="message.id"
+          >
+            <div>
+              <strong>{{
+                message.self ? "You: " : otherPerson.username
+              }}</strong>
+              {{ message.text }}
+            </div>
+          </div>
+        </TransitionGroup>
       </div>
+
       <div v-if="chatData.disconnected">Chat disconnected</div>
       <input type="text" v-model="messageInput" />
-      <button @click="send" :disabled="chatData.disconnected">Send</button> <br />
-      <button v-if="!chatData.disconnected" @click="dc">Disconnect</button>
+      <button
+        @click="send"
+        :disabled="chatData.disconnected"
+        class="send-button"
+      >
+        Send
+      </button>
+      <br />
+
+      <button
+        v-if="!chatData.disconnected"
+        @click="dc"
+        class="disconnect-button"
+      >
+        Disconnect
+      </button>
     </div>
-    <div v-else>
+    <div v-else style="padding: 1rem; text-align: center; font-size: 1.5rem">
       <button @click="connectToUser" :disabled="connectDisabled">
         Connect to user
       </button>
@@ -46,6 +74,18 @@ export default defineComponent({
       () => store.chats[props.peerId]
     );
 
+    const otherPerson = computed(() => {
+      if (chatData.value) {
+        console.log(store.users);
+        return store.users.find((u) => u.peerId === props.peerId);
+      } else return undefined;
+    });
+
+    // reset unread
+    if (chatData.value) {
+      chatData.value.unread = 0;
+    }
+
     const send = () => {
       if (!chatData.value) return;
       sendMessage(chatData.value, messageInput.value);
@@ -69,7 +109,36 @@ export default defineComponent({
       dc,
       connectToUser,
       connectDisabled,
+      otherPerson,
     };
   },
 });
 </script>
+
+<style>
+.messages {
+  margin-bottom: 1rem;
+}
+
+.messages .message {
+  margin-bottom: 0.5rem;
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.send-button {
+  margin-left: 0.5rem;
+}
+
+.disconnect-button {
+  margin: 1rem auto;
+}
+</style>

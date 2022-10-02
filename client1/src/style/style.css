@@ -1,0 +1,20 @@
+:root {
+  --bg-primary: #F7F9F9;
+  --bg-secondary: #d5e2e2;
+  --brand: #2081C3;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: var(--bg-primary);
+}
+
+.section {
+  max-width: 768px;
+  margin: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

@@ -1,5 +1,9 @@
 import { DataConnection, Peer } from "peerjs";
 import { ChatData, store } from "@/store";
+import { useToast } from "vue-toastification";
+import router from "@/router";
+
+const toast = useToast();
 
 export const peer = new Peer();
 
@@ -22,7 +26,20 @@ const initializeConnection = (conn: DataConnection) => {
   if (!conn) return;
 
   conn.on("data", (data) => {
-    store.chats[conn.peer].messages.push({ text: data as string });
+    store.chats[conn.peer].messages.push({
+      text: data as string,
+      id: store.chats[conn.peer].messages.length,
+    });
+
+    if (
+      !(
+        router.currentRoute.value.name === "message" &&
+        router.currentRoute.value.params.peerId == conn.peer
+      )
+    ) {
+      toast.info("Message: " + data);
+      store.chats[conn.peer].unread++;
+    }
   });
 
   conn.on("open", () => {
@@ -30,6 +47,7 @@ const initializeConnection = (conn: DataConnection) => {
       messages: [],
       disconnected: false,
       conn: conn,
+      unread: 0,
     };
   });
 
@@ -43,6 +61,7 @@ export const sendMessage = (chat: ChatData, message: string) => {
   store.chats[chat.conn.peer].messages.push({
     self: true,
     text: message,
+    id: store.chats[chat.conn.peer].messages.length,
   });
 };
 

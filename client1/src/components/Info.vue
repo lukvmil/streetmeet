@@ -1,17 +1,19 @@
 <template>
-  <h1>Hello!</h1>
-  <div>
-    <input type="text" placeholder="Enter a username!" v-model="username" />
-  </div>
-  <div>
-    <input
-      type="text"
-      placeholder="What's on your mind today?"
-      v-model="topic"
-    />
-  </div>
-  <div>
-    <button @click="submit">Submit</button>
+  <div class="user-form">
+    <h1>Hello!</h1>
+    <div>
+      <input type="text" placeholder="Enter a username!" v-model="username" />
+    </div>
+    <div>
+      <input
+        type="text"
+        placeholder="What's on your mind today?"
+        v-model="topic"
+      />
+    </div>
+    <div>
+      <button @click="submit">Submit</button>
+    </div>
   </div>
 </template>
 
@@ -68,3 +70,26 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.user-form {
+  max-width: 20rem;
+  margin: auto;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.user-form h1 {
+  margin-bottom: none;
+}
+
+.user-form input {
+  width: 100%;
+}
+
+.user-form > * {
+  padding-bottom: 1rem;
+}
+</style>

@@ -22,6 +22,10 @@ const routes: Array<RouteRecordRaw> = [
     }),
     component: Messaging,
   },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/",
+  },
 ];
 
 const router = createRouter({

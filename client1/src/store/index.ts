@@ -5,10 +5,12 @@ import { DataConnection } from "peerjs";
 export interface ChatData {
   conn: DataConnection;
   messages: {
+    id: number;
     self?: boolean;
     text: string;
   }[];
   disconnected: boolean;
+  unread: number;
 }
 
 export interface ChatStore {

@@ -1,8 +1,9 @@
 <template>
   <div class="home">
-    <h1>StreetMeet</h1>
-    <Info v-if="!profile._id" />
-    <PeopleList v-else />
+    <div class="section">
+      <Info v-if="!profile._id" />
+      <PeopleList v-else />
+    </div>
   </div>
 </template>
 

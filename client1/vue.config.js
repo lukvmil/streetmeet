@@ -1,17 +1,22 @@
 const { defineConfig } = require("@vue/cli-service");
 const path = require("path");
 
-module.exports = defineConfig({
-  publicPath: "./static",
+let config = {
   outputDir: path.resolve(__dirname, "../static"),
   transpileDependencies: true,
   lintOnSave: false,
   devServer: {
     proxy: {
       "/api": {
-        target: "http://streetmeet.lukvmil.com",
+        target: "https://streetmeet.lukvmil.com",
         changeOrigin: true,
       },
     },
   },
-});
+};
+
+if (process.env.NODE_ENV == "production") {
+  config.publicPath = "./static";
+}
+
+module.exports = defineConfig(config);
