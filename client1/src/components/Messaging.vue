@@ -1,93 +1,74 @@
 <template>
   <div>
-    <input v-model="remoteId" type="text" placeholder="Remote ID" />
-    <button @click="connect" :disabled="connected">Connect</button>
-    <div>Local ID: {{ peerInitialized ? localId : "Loading..." }}</div>
-
-    <div v-if="connected">
-      <div>Connected!</div>
+    <div v-if="chatData">
       <h2>Messages</h2>
-      <div v-for="message in messages" :key="message">
-        <div>{{ message }}</div>
+      <div v-for="message in chatData.messages">
+        <div>
+          <strong>{{ message.self ? "You: " : "" }}</strong> {{ message.text }}
+        </div>
       </div>
+      <div v-if="chatData.disconnected">Chat disconnected</div>
       <input type="text" v-model="messageInput" />
-      <button @click="sendMessage">Send</button> <br />
-      <button @click="disconnect">Disconnect</button>
+      <button @click="send" :disabled="chatData.disconnected">Send</button> <br />
+      <button v-if="!chatData.disconnected" @click="dc">Disconnect</button>
+    </div>
+    <div v-else>
+      <button @click="connectToUser" :disabled="connectDisabled">
+        Connect to user
+      </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
-import { peer } from "@/messaging/webrtc";
-import { DataConnection } from "peerjs";
-import { store } from "@/store";
+import { ChatData, store } from "@/store";
+import { connect, sendMessage, disconnect } from "@/messaging/webrtc";
+import router from "@/router";
 
 export default defineComponent({
   name: "MessageVue",
 
-  setup() {
-    const remoteId = ref("");
-    const localId = ref(peer.id);
+  props: {
+    peerId: {
+      type: String,
+      required: true,
+    },
+  },
+
+  setup(props) {
+    if (!store.profile._id) {
+      router.push("/");
+    }
+
     const messageInput = ref("");
-    const connected = ref(false);
-    const peerInitialized = computed(() => store.peerInitialized);
+    const chatData = computed<ChatData | undefined>(
+      () => store.chats[props.peerId]
+    );
 
-    let conn: DataConnection | null = null;
-
-    peer.on("open", () => {
-      localId.value = peer.id;
-    });
-
-    const messages = ref<string[]>([]);
-
-    const connect = () => {
-      conn = peer.connect(remoteId.value);
-      initializeConnection();
+    const send = () => {
+      if (!chatData.value) return;
+      sendMessage(chatData.value, messageInput.value);
+      messageInput.value = "";
     };
 
-    peer.on("connection", (connection) => {
-      conn = connection;
-      initializeConnection();
-    });
-
-    const initializeConnection = () => {
-      if (!conn) return;
-
-      conn.on("data", (data) => {
-        messages.value.push(data as string);
-      });
-      conn.on("open", () => {
-        connected.value = true;
-      });
-      conn.on("close", () => {
-        connected.value = false;
-      });
+    const dc = () => {
+      if (chatData.value) disconnect(chatData.value);
     };
 
-    const sendMessage = () => {
-      if (conn) {
-        conn.send(messageInput.value);
-        messages.value.push(messageInput.value);
-      }
-    };
-
-    const disconnect = () => {
-      if (conn) {
-        conn.close();
-      }
+    const connectDisabled = ref(false);
+    const connectToUser = () => {
+      connectDisabled.value = true;
+      connect(props.peerId);
     };
 
     return {
-      remoteId,
-      localId,
-      connect,
-      messages,
-      connected,
+      chatData,
       messageInput,
-      sendMessage,
-      disconnect,
-      peerInitialized,
+      send,
+      dc,
+      connectToUser,
+      connectDisabled,
     };
   },
 });

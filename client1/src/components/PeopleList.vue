@@ -4,13 +4,14 @@
     <div v-for="person in people" :key="person._id">
       <h3>{{ person.username }}</h3>
       <div>Topic: {{ person.topic }}</div>
+      <router-link :to="`message/${person.peerId}`">Message</router-link>
     </div>
   </div>
   <div v-else>Loading...</div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onBeforeUnmount, ref } from "vue";
 import { User } from "@/types/user";
 import api from "@/api";
 import { store } from "@/store";
@@ -27,6 +28,12 @@ export default defineComponent({
       people.value = res.data;
     };
     loadPeople();
+
+    const interval = setInterval(loadPeople, 2000);
+
+    onBeforeUnmount(() => {
+      clearInterval(interval);
+    });
 
     return {
       people,

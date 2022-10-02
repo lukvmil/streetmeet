@@ -15,8 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     component: AboutView,
   },
   {
-    path: "/message",
+    path: "/message/:peerId",
     name: "message",
+    props: (route) => ({
+      peerId: route.params.peerId,
+    }),
     component: Messaging,
   },
 ];
