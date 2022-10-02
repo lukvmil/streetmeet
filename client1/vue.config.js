@@ -16,7 +16,7 @@ let config = {
 };
 
 if (process.env.NODE_ENV == "production") {
-  config.publicPath = "./static";
+  config.publicPath = "/streetmeet/static";
 }
 
 module.exports = defineConfig(config);
